@@ -1,0 +1,44 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@400;500;600;700&display=swap');
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
+  --font-display: "Outfit", sans-serif;
+  
+  --color-brand-primary: #0f172a;
+  --color-brand-secondary: #f97316; /* Orange 500 */
+  --color-brand-accent: #3b82f6; /* Blue 500 */
+  --color-brand-dark: #0f172a; /* Slate 900 */
+}
+
+@layer base {
+  body {
+    @apply font-sans bg-slate-50 text-slate-900 antialiased;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-display font-bold tracking-tight;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply px-6 py-3 bg-brand-secondary text-white rounded-2xl font-bold hover:bg-orange-600 transition-all shadow-md hover:shadow-orange-200/50 hover:-translate-y-0.5 focus:outline-none disabled:opacity-50 disabled:cursor-not-allowed;
+  }
+  
+  .btn-outline {
+    @apply px-6 py-3 border-2 border-slate-200 text-slate-700 rounded-2xl font-bold hover:bg-white hover:border-slate-300 transition-all focus:outline-none;
+  }
+  
+  .card-bento {
+    @apply bg-white p-8 rounded-[2rem] shadow-sm border border-slate-200 transition-all hover:shadow-xl hover:border-slate-300;
+  }
+  
+  .section-label {
+    @apply text-[10px] font-black tracking-[0.2em] text-brand-secondary uppercase mb-3 block;
+  }
+  
+  .container-custom {
+    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-10;
+  }
+}

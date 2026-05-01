@@ -1,0 +1,73 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // 0. Global Safety Net
+    match /{document=**} {
+      allow read, write: if false;
+    }
+
+    // --- Helpers ---
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    function isAdmin() {
+      return isSignedIn() && (
+        request.auth.token.email == 'mohizmaradiya@gmail.com' && request.auth.token.email_verified == true
+      );
+    }
+
+    function isValidId(id) {
+      return id is string && id.size() <= 128 && id.matches('^[a-zA-Z0-9_\\-]+$');
+    }
+
+    function incoming() {
+      return request.resource.data;
+    }
+
+    function existing() {
+      return resource.data;
+    }
+
+    // --- Validation Helpers ---
+    function isValidLead(data) {
+      return data.fullName is string && data.fullName.size() <= 100 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.phone is string && data.phone.size() <= 20 &&
+             data.status in ['new', 'contacted', 'qualified', 'lost', 'converted'] &&
+             data.createdAt == request.time;
+    }
+
+    function isValidClient(data) {
+      return data.name is string && data.name.size() <= 100 &&
+             data.email is string && data.email.size() <= 100 &&
+             data.status in ['active', 'inactive'] &&
+             data.createdAt == request.time;
+    }
+
+    function isValidProject(data) {
+      return data.clientId is string && data.title is string &&
+             data.status in ['pending', 'active', 'completed', 'terminated'] &&
+             data.createdAt == request.time;
+    }
+
+    // --- Collection Rules ---
+
+    match /leads/{leadId} {
+      allow create: if isValidLead(incoming());
+      allow read, update, delete: if isAdmin();
+    }
+
+    match /clients/{clientId} {
+      allow read, write: if isAdmin();
+      allow create: if isAdmin() && isValidClient(incoming());
+      allow update: if isAdmin() && isValidClient(incoming());
+    }
+
+    match /projects/{projectId} {
+      allow read, write: if isAdmin();
+      allow create: if isAdmin() && isValidProject(incoming());
+      allow update: if isAdmin() && isValidProject(incoming());
+    }
+  }
+}

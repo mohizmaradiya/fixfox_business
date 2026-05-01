@@ -1,0 +1,68 @@
+{
+  "entities": {
+    "Lead": {
+      "title": "Enquiry Lead",
+      "description": "Captured B2B enquiries from the contact form",
+      "type": "object",
+      "properties": {
+        "fullName": { "type": "string" },
+        "companyName": { "type": "string" },
+        "facilityType": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "city": { "type": "string" },
+        "servicesInterested": { "type": "array", "items": { "type": "string" } },
+        "message": { "type": "string" },
+        "status": { "type": "string", "enum": ["new", "contacted", "qualified", "lost", "converted"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["fullName", "companyName", "phone", "email", "status", "createdAt"]
+    },
+    "Client": {
+      "title": "Corporate Client",
+      "description": "Successfully onboarded facility management clients",
+      "type": "object",
+      "properties": {
+        "name": { "type": "string" },
+        "contactPerson": { "type": "string" },
+        "email": { "type": "string", "format": "email" },
+        "phone": { "type": "string" },
+        "address": { "type": "string" },
+        "status": { "type": "string", "enum": ["active", "inactive"] },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["name", "email", "status", "createdAt"]
+    },
+    "Project": {
+      "title": "AMC Project",
+      "description": "Active service contracts/projects",
+      "type": "object",
+      "properties": {
+        "clientId": { "type": "string" },
+        "title": { "type": "string" },
+        "serviceType": { "type": "string" },
+        "startDate": { "type": "string", "format": "date" },
+        "endDate": { "type": "string", "format": "date" },
+        "status": { "type": "string", "enum": ["pending", "active", "completed", "terminated"] },
+        "teamSize": { "type": "number" },
+        "managerId": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["clientId", "title", "serviceType", "status", "createdAt"]
+    }
+  },
+  "firestore": {
+    "/leads/{leadId}": {
+      "schema": "Lead",
+      "description": "Inbound leads from contact form"
+    },
+    "/clients/{clientId}": {
+      "schema": "Client",
+      "description": "Managed customer database"
+    },
+    "/projects/{projectId}": {
+      "schema": "Project",
+      "description": "Active facility management projects"
+    }
+  }
+}
