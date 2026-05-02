@@ -14,7 +14,7 @@ import Footer from './components/Footer';
 
 export default function App() {
   return (
-    <BrowserRouter>
+    <BrowserRouter basename="/b2b">
       <Routes>
         {/* Public Routes */}
         <Route
