@@ -12,8 +12,9 @@ service cloud.firestore {
     }
 
     function isAdmin() {
-      return isSignedIn() && (
-        request.auth.token.email == 'mohizmaradiya@gmail.com' && request.auth.token.email_verified == true
+      return isSignedIn() && request.auth.token.email_verified == true && (
+        request.auth.token.email == 'mohizmaradiya@gmail.com' ||
+        exists(/databases/$(database)/documents/staff/$(request.auth.token.email))
       );
     }
 
@@ -68,6 +69,11 @@ service cloud.firestore {
       allow read, write: if isAdmin();
       allow create: if isAdmin() && isValidProject(incoming());
       allow update: if isAdmin() && isValidProject(incoming());
+    }
+
+    match /staff/{email} {
+      allow read: if isAdmin();
+      allow write: if request.auth.token.email == 'mohizmaradiya@gmail.com';
     }
   }
 }

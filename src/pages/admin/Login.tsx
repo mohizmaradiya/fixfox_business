@@ -1,27 +1,49 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '../../lib/firebase';
+import { doc, getDoc } from 'firebase/firestore';
+import { auth, db } from '../../lib/firebase';
 import { Settings, LogIn, AlertCircle } from 'lucide-react';
 
 export default function Login() {
   const [error, setError] = useState('');
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const handleGoogleLogin = async () => {
+    if (loading) return;
+    
+    setLoading(true);
+    setError('');
     const provider = new GoogleAuthProvider();
     try {
       const result = await signInWithPopup(auth, provider);
-      // Admin check is handled by security rules, but we can do a UI check too
-      if (result.user.email === 'mohizmaradiya@gmail.com') {
+      
+      if (!result.user.email) throw new Error('No email found in Google account');
+
+      // Check if user is the primary admin or in the staff collection
+      const staffDoc = await getDoc(doc(db, 'staff', result.user.email));
+      
+      if (result.user.email === 'mohizmaradiya@gmail.com' || staffDoc.exists()) {
         navigate('/admin');
       } else {
         setError('Unauthorized access. Only authorized staff can enter the CRM.');
         await auth.signOut();
       }
-    } catch (err) {
-      console.error(err);
-      setError('Failed to login. Please check your connection.');
+    } catch (err: any) {
+      console.error('Login error:', err);
+      
+      if (err.code === 'auth/unauthorized-domain') {
+        setError('This domain is not authorized in Firebase. Please add "b2b.fixfox.in" to your Authorized Domains in the Firebase Console.');
+      } else if (err.code === 'auth/popup-blocked') {
+        setError('Login popup was blocked by your browser. Please allow popups for this site.');
+      } else if (err.code === 'auth/cancelled-popup-request') {
+        setError('Login was cancelled. Please try again.');
+      } else {
+        setError(err.message || 'Failed to login. Please check your connection.');
+      }
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -49,14 +71,21 @@ export default function Login() {
 
         <button
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-4 py-5 bg-white rounded-2xl hover:bg-slate-50 transition-all duration-300 font-black text-slate-900 mb-8 shadow-xl"
+          disabled={loading}
+          className={`w-full flex items-center justify-center gap-4 py-5 bg-white rounded-2xl transition-all duration-300 font-black text-slate-900 mb-8 shadow-xl ${
+            loading ? 'opacity-70 cursor-not-allowed' : 'hover:bg-slate-50'
+          }`}
         >
-          <img 
-            src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
-            className="w-6 h-6" 
-            alt="Google" 
-          />
-          Sign in with Google
+          {loading ? (
+            <div className="w-6 h-6 border-2 border-slate-900 border-t-transparent rounded-full animate-spin" />
+          ) : (
+            <img 
+              src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" 
+              className="w-6 h-6" 
+              alt="Google" 
+            />
+          )}
+          {loading ? 'Authenticating...' : 'Sign in with Google'}
         </button>
 
         <div className="space-y-4">

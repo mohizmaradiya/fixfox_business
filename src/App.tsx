@@ -8,6 +8,7 @@ import Dashboard from './pages/admin/Dashboard';
 import Leads from './pages/admin/Leads';
 import Clients from './pages/admin/Clients';
 import Projects from './pages/admin/Projects';
+import Staff from './pages/admin/Staff';
 import Login from './pages/admin/Login';
 import Navbar from './components/Navbar';
 import Footer from './components/Footer';
@@ -73,6 +74,7 @@ export default function App() {
           <Route path="leads" element={<Leads />} />
           <Route path="clients" element={<Clients />} />
           <Route path="projects" element={<Projects />} />
+          <Route path="staff" element={<Staff />} />
         </Route>
       </Routes>
     </BrowserRouter>

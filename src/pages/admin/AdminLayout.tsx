@@ -4,7 +4,7 @@ import { onAuthStateChanged, signOut, User } from 'firebase/auth';
 import { auth } from '../../lib/firebase';
 import { 
   LayoutDashboard, Users, Building2, Briefcase, 
-  LogOut, Settings, Bell, Search, Menu, X 
+  LogOut, Settings, Bell, Search, Menu, X, Shield 
 } from 'lucide-react';
 import { cn } from '../../lib/utils';
 
@@ -13,6 +13,7 @@ const sidebarLinks = [
   { name: 'Leads', href: '/admin/leads', icon: Bell },
   { name: 'Clients', href: '/admin/clients', icon: Users },
   { name: 'Projects', href: '/admin/projects', icon: Briefcase },
+  { name: 'Staff', href: '/admin/staff', icon: Shield },
 ];
 
 export default function AdminLayout() {

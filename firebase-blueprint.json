@@ -49,12 +49,28 @@
         "createdAt": { "type": "string", "format": "date-time" }
       },
       "required": ["clientId", "title", "serviceType", "status", "createdAt"]
+    },
+    "Staff": {
+      "title": "Authorized Staff",
+      "description": "Users who are allowed to access the CRM",
+      "type": "object",
+      "properties": {
+        "email": { "type": "string", "format": "email" },
+        "role": { "type": "string", "enum": ["admin", "editor", "viewer"] },
+        "name": { "type": "string" },
+        "createdAt": { "type": "string", "format": "date-time" }
+      },
+      "required": ["email", "role", "createdAt"]
     }
   },
   "firestore": {
     "/leads/{leadId}": {
       "schema": "Lead",
       "description": "Inbound leads from contact form"
+    },
+    "/staff/{staffId}": {
+      "schema": "Staff",
+      "description": "Authorized CRM users"
     },
     "/clients/{clientId}": {
       "schema": "Client",
